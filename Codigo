@@ -1,0 +1,87 @@
+/*
+Programa para la simulación del funcinamineto de una ventana de un
+vehículo. Vamos tener dos motores uno de subida y otro para la 
+bajada, estos serán accionados por un pulsador, cuando pulsemos
+una vez subirá arriba, cuando volvamos pulsar bajará. El recorrido
+durará 7 segundos. MIentras los motores estan accionados deben 
+responder de igual forma al accionamiento del pulsador
+(responsive).
+
+En cambio en esta segunda parte (Práctica 21),vamos hacer que el 
+pulsador este forzado para que asi podamos obtener tres estados
+(ARRIBA, PARADA Y ABAJO)y que despues con cada pulsacion pase 
+por parada o 0.
+
+Entrada: Pulsador(digital)
+Salidas: Relé (2x digital)
+
+Autor: Mehdi Boumhara Farhane
+Data: 9 de Febrero del 2023
+*/
+
+#define motorArriba 12
+#define motorAbajo  13
+#define pulsador     7
+
+int estado = 1;    // Vamos poder tomar tres valores(0, 1 , 2 y 3).
+int contador = 0; // Este será el contador para los impulsos.
+
+void setup() {
+  pinMode(motorArriba, OUTPUT);
+  pinMode(motorAbajo,  OUTPUT); 
+  pinMode(pulsador, INPUT);
+  
+  Serial.begin(9600);
+}
+// Lectura de nuestro pulsador.
+void loop() {
+  if(digitalRead(pulsador)) {
+    estado = (estado + 1)% 4; //Los valores estarán entre 0 y 3.
+   // estado ++;
+  // if(estado > 3) { 
+ //    estado = 0;
+    // }
+    
+    contador = 100;
+    while (digitalRead(pulsador)) {
+      delay(20);
+    }
+  }
+ // Fin lectura del pulsador.
+  
+  Serial.print ("valor del contador:");
+  Serial.print(contador);
+  Serial.print(" | Estado: ");
+  Serial.print(estado);
+  
+  // Accionamineto de los motores.
+  if(contador > 0) {
+    if(estado == 0) {
+      digitalWrite(motorArriba, HIGH);
+      digitalWrite(motorAbajo,   LOW);
+      delay(70);
+      contador --;
+    }
+    else if(estado == 2) {
+      digitalWrite(motorArriba, LOW);
+      digitalWrite(motorAbajo, HIGH);
+      delay(70);
+      contador --;
+    }
+   
+     else {
+      digitalWrite(motorArriba, LOW);
+      digitalWrite(motorAbajo,  LOW);
+      delay(70);
+      contador --;
+    }
+  }
+  else {      // Si el pulsador no esta accionado, leerá el botón 10 v/s.
+    digitalWrite(motorArriba, LOW);
+    digitalWrite(motorAbajo,  LOW);
+    delay(100);
+  }
+  // Final del accionamiento de los motores.
+  //delay(80);
+}
+
